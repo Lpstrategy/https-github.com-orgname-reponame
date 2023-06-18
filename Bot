@@ -1,0 +1,37 @@
+import discord
+from discord.ext import tasks
+
+intents = discord.Intents.default()
+client = discord.Client(intents=intents)
+
+@client.event
+async def on_ready():
+    print(f'We have logged in as {client.user}')
+    post_message.start()
+
+@tasks.loop(hours=4)
+async def post_message():
+    channel_id = chart  # Replace with the ID of your desired channel
+
+    channel = client.get_channel(channel_id)
+    if channel is None:
+        print("Invalid channel ID. Make sure the bot has access to the specified channel.")
+        return
+
+    message = "!fc btc binance 4h"  # The message you want to post
+
+    await channel.send(message)
+
+@post_message.before_loop
+async def before_post_message():
+    # Set the start time for the task
+    await client.wait_until_ready()
+    now = datetime.datetime.utcnow()
+    target_time = datetime.datetime(now.year, now.month, now.day, 0, 1)  # Set the start time to 00:01 UTC
+    if target_time < now:
+        target_time += datetime.timedelta(days=1)  # If the current time has already passed the target time, schedule it for the next day
+    delta = target_time - now
+    await asyncio.sleep(delta.total_seconds())
+
+
+client.run('MTEyMDAxNjQ0NDQ1MzgyNjYzMQ.GgIXH7.cYlfTDkyomfxqsPnVg_Ml1zlhbnaKVMAWNoCQY')
